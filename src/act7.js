@@ -1,17 +1,52 @@
 import swapi from './swapi.js';
 
 //Exemple d'inicialització de la llista de pel·lícules. Falten dades!
-async function setMovieHeading(movieId, titleSelector) {
-  // Obtenim els elements del DOM amb QuerySelector
-  const title = document.querySelector(titleSelector);
+export async function setMovieHeading(movieId, titleSelector, infoSelector, directorSelector) {
+  try {
+    // Obtenim els elements del DOM amb `querySelector` i els emmagatzemem en una variable
+    const titleElement = document.querySelector(titleSelector);
+    const infoElement = document.querySelector(infoSelector);
+    const directorElement = document.querySelector(directorSelector);
 
-  // Obtenim la informació de la pelicula
-  const movieInfo = await swapi.getMovieInfo(movieId);
-  // Injectem
-  title.innerHTML = movieInfo.name;
+    // Obtenim la informació de la pel·lícula cridant al mètode de `swapi.js`
+    const movieInfo = await swapi.getMovieInfo(movieId);
+
+    // Substituïm les dades fent servir un mètode de reemplaçament com `innerHTML`
+    titleElement.innerHTML = movieInfo.name;
+    infoElement.innerHTML = `Episodi ${movieInfo.episodeID} - ${movieInfo.release}`;
+    directorElement.innerHTML = `Director: ${movieInfo.director}`;
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }
 
-async function initMovieSelect(selector) {}
+export async function initMovieSelect(selector) {
+  try {
+    // Obtenim l'element del DOM corresponent al selector de pel·lícules
+    const selectElement = document.querySelector(selector);
+
+    // Obtenim la llista de pel·lícules ordenades utilitzant listMoviesSorted() de swapi.js
+    const movies = await swapi.listMoviesSorted();
+
+    // Creem una opció inicial "Selecciona una pel·lícula"
+    const initialOption = document.createElement('option');
+    initialOption.value = '';
+    initialOption.textContent = 'Selecciona una pel·lícula';
+
+    // Afegim la opció inicial al selector de pel·lícules
+    selectElement.appendChild(initialOption);
+
+    // Recorrem les pel·lícules i afegim cada una com una opció al selector
+    movies.forEach((movie) => {
+      const option = document.createElement('option');
+      // option.value = movie.episodeID; // Opció valor és l'ID de l'episodi
+      option.textContent = `${movie.name} - Episodi ${movie.episodeID}`; // Opció text és el nom de la pel·lícula
+      selectElement.appendChild(option);
+    });
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
 
 function deleteAllCharacterTokens() {}
 
