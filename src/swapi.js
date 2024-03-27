@@ -46,7 +46,6 @@ async function listMovies() {
 
 async function listMoviesSorted() {
   const movies = await listMovies();
-  console.log(movies)
   return movies.sort(_compareByName);
 }
 
