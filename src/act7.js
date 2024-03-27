@@ -39,8 +39,8 @@ export async function initMovieSelect(selector) {
     // Recorrem les pel·lícules i afegim cada una com una opció al selector
     movies.forEach((movie) => {
       const option = document.createElement('option');
-      // option.value = movie.episodeID; // Opció valor és l'ID de l'episodi
-      option.textContent = `${movie.name} - Episodi ${movie.episodeID}`; // Opció text és el nom de la pel·lícula
+      option.value = movie.episodeID; // Opció valor és l'ID de l'episodi
+      option.textContent = movie.name; // Opció text és el nom de la pel·lícula
       selectElement.appendChild(option);
     });
   } catch (error) {
@@ -58,7 +58,41 @@ async function _createCharacterTokens() {}
 
 function _addDivChild(parent, className, html) {}
 
-function setMovieSelectCallbacks() {}
+function setMovieSelectCallbacks() {
+   // Obtenim l'element select de pel·lícules
+   const selectElement = document.querySelector('#select-movie');
+
+   // Afegim un event listener per a l'esdeveniment 'change' a l'element select
+   selectElement.addEventListener('change', async (event) => {
+     // Obtenim el valor seleccionat de l'element select
+     const selectedMovieId = event.target.value;
+ 
+     // Obtenim les referències als elements de la capçalera de la pel·lícula
+     const titleElement = document.querySelector('.movie__title');
+     const infoElement = document.querySelector('.movie__info');
+     const directorElement = document.querySelector('.movie__director');
+ 
+     // Comprovem si s'ha seleccionat una pel·lícula (no és la opció "Selecciona una pel·lícula")
+     if (selectedMovieId) {
+       try {
+         // Obtenim la informació de la pel·lícula seleccionada utilitzant getMovieInfo() de swapi.js
+         const movieInfo = await swapi.getMovieInfo(selectedMovieId);
+ 
+         // Actualitzem els elements de la capçalera amb la informació de la pel·lícula
+         titleElement.textContent = movieInfo.name;
+         infoElement.textContent = `Episodi ${movieInfo.episodeID} - ${movieInfo.release}`;
+         directorElement.textContent = `Director: ${movieInfo.director}`;
+       } catch (error) {
+         console.error('Error:', error);
+       }
+     } else {
+       // Si s'ha seleccionat la opció "Selecciona una pel·lícula", buidem la capçalera
+       titleElement.textContent = '';
+       infoElement.textContent = '';
+       directorElement.textContent = '';
+     }
+   });
+}
 
 async function _handleOnSelectMovieChanged(event) {}
 
